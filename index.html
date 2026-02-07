@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>A Lily, Just for You 🌸</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(160deg, #ffe6f0 0%, #fff0fa 50%, #ffd6e8 100%);
+    font-family: 'Georgia', serif;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ✨ Floating hearts and stars */
+  .heart, .star {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: pink;
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: floatUp linear infinite;
+  }
+
+  .heart::before, .heart::after {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: pink;
+    border-radius: 50%;
+  }
+
+  .heart::before {
+    top: -7px;
+    left: 0;
+  }
+
+  .heart::after {
+    top: 0;
+    left: -7px;
+  }
+
+  .star {
+    width: 8px;
+    height: 8px;
+    background: #fff0f5;
+    border-radius: 50%;
+    opacity: 0.6;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { transform: translateY(-800px) rotate(360deg); opacity: 0; }
+  }
+
+  h1 {
+    margin-top: 20px;
+    font-size: 2.3rem;
+    color: #c94c7c;
+  }
+
+  .subtitle {
+    color: #a85a7a;
+    margin-bottom: 10px;
+  }
+
+  .scene {
+    position: relative;
+    height: 75vh;
+  }
+
+  /* 🌸 REALISTIC LILY WITH BLOOMING PETALS */
+  .lily {
+    width: 200px;
+    height: 200px;
+    margin: auto;
+    margin-top: 120px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .lily .petal {
+    width: 100px;
+    height: 140px;
+    background: radial-gradient(circle at top, #ffc0d0 0%, #ff5fa2 80%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    border-radius: 60% 60% 50% 50%;
+    opacity: 0;
+    z-index: 1;
+    box-shadow: 0 2px 10px rgba(255, 100, 150, 0.3);
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .lily .center {
+    width: 40px;
+    height: 40px;
+    background: #ff7fae;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 3;
+    box-shadow: 0 0 15px rgba(255, 100, 150, 0.5);
+    transition: transform 0.3s;
+  }
+
+  /* WATER POT at top right */
+  .pot {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    cursor: grab;
+    font-size: 1.3rem;
+    background: #ffffffdd;
+    padding: 12px 18px;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    user-select: none;
+  }
+
+  .pot span {
+    display: block;
+    font-size: 0.7rem;
+    color: #a85a7a;
+  }
+
+  /* POPUP */
+  .popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 214, 232, 0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .popup-content {
+    background: white;
+    padding: 30px;
+    border-radius: 22px;
+    width: 320px;
+    color: #c94c7c;
+    animation: pop 0.4s ease;
+  }
+
+  @keyframes pop {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+</style>
+</head>
+
+<body>
+
+<h1>A Lily, Just for You 🌸</h1>
+<p class="subtitle">Water it gently🫶🏽</p>
+
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div class="scene">
+
+  <div id="lily" class="lily">
+    <div class="petal"></div>
+    <div class="petal"></div>
+    <div class="petal"></div>
+    <div class="petal"></div>
+    <div class="petal"></div>
+    <div class="center"></div>
+  </div>
+
+  <div id="pot" class="pot" draggable="true">
+    💧
+    <span>Drag to Water</span>
+  </div>
+
+</div>
+
+<div id="popup" class="popup">
+  <div class="popup-content">
+    <h2>🌸</h2>
+    <p>
+      HAPPY ROSE DAY!!! (it's a lily but ok🌹)
+      since, i can't get you flowers irl i made em heehe
+      these will not die 🫶🏽 
+      i love you jaaneman🐻‍❄️
+    </p>
+  </div>
+</div>
+
+<script>
+  const pot = document.getElementById("pot");
+  const lily = document.getElementById("lily");
+  const petals = lily.querySelectorAll(".petal");
+  const center = lily.querySelector(".center");
+  const popup = document.getElementById("popup");
+  const music = document.getElementById("bgMusic");
+
+  let bloom = 0;
+  let watering = false;
+
+  pot.addEventListener("dragstart", () => {
+    watering = true;
+    music.play();
+  });
+
+  pot.addEventListener("dragend", () => {
+    watering = false;
+  });
+
+  document.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    if (!watering) return;
+
+    const rect = lily.getBoundingClientRect();
+    if (
+      e.clientX > rect.left &&
+      e.clientX < rect.right &&
+      e.clientY > rect.top &&
+      e.clientY < rect.bottom
+    ) {
+      bloom += 0.01;
+      bloom = Math.min(bloom, 1);
+
+      // Petals open individually
+      petals.forEach((petal, i) => {
+        petal.style.opacity = bloom;
+        petal.style.transform = `translate(-50%, -50%) rotate(${[-30,-15,0,15,30][i]}deg) scale(${0.5 + bloom})`;
+      });
+
+      // Center grows
+      center.style.transform = `translate(-50%, -50%) scale(${bloom})`;
+
+      if (bloom >= 1) {
+        popup.style.display = "flex";
+        watering = false;
+      }
+    }
+  });
+
+  // Floating hearts and stars
+  for(let i = 0; i < 30; i++) {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.bottom = Math.random() * 20 + 'px';
+    heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+    document.body.appendChild(heart);
+
+    const star = document.createElement('div');
+    star.classList.add('star');
+    star.style.left = Math.random() * 100 + 'vw';
+    star.style.bottom = Math.random() * 20 + 'px';
+    star.style.animationDuration = (6 + Math.random() * 6) + 's';
+    document.body.appendChild(star);
+  }
+</script>
+
+</body>
+</html>
